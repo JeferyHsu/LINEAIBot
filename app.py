@@ -146,7 +146,9 @@ def get_weather(location):
     try:
         response = requests.get(url)
         data = response.json()
-        
+        if not data.get("records") or not data["records"].get("location") or len(data["records"]["location"]) == 0:
+            return f"抱歉，找不到{location}的天氣資訊"     
+           
         # 解析API回應並格式化天氣資訊
         weather_elements = data["records"]["location"][0]["weatherElement"]
         weather_state = weather_elements[0]["time"][0]["parameter"]["parameterName"]
@@ -154,9 +156,10 @@ def get_weather(location):
         max_temp = weather_elements[4]["time"][0]["parameter"]["parameterName"]
         
         return f"{location}目前天氣狀況「{weather_state}」，溫度 {min_temp} 到 {max_temp} 度"
-    except Exception as e:
-        return f"抱歉，無法獲取{location}的天氣資訊：{str(e)}"
-    
+    except (KeyError, IndexError) as e:
+        return f"抱歉，無法獲取{location}的天氣資訊：資料格式錯誤 ({str(e)})"
+
+
 @handler.add(MessageEvent, message=StickerMessage)
 def handle_sticker_message(event):
     # 回覆貼圖
