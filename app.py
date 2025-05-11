@@ -283,7 +283,7 @@ if __name__ == "__main__":
     rich_menu_id = line_bot_api.create_rich_menu(create_rich_menu())
     
     # 上傳Rich Menu圖片（需要準備一張2500x843像素的圖片）
-    with open("hazy01.jpg", 'rb') as f:
+    with open("111.png", 'rb') as f:
         line_bot_api.set_rich_menu_image(rich_menu_id, "image/jpeg", f)
     
     # 將Rich Menu設為預設
