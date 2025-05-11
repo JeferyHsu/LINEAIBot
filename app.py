@@ -127,8 +127,9 @@ def handle_text_message(event):
 # 提取地點函數
 def extract_location(text):
     # 將"台"轉換為"臺"
-    text = text.replace("台北市", "臺北市")
-
+    replaced_text = text.replace("台北市", "臺北市")
+    print(replaced_text)
+    
     location_mapping = {
         "宜蘭縣", "花蓮縣", "臺東縣", "澎湖縣", 
         "金門縣", "連江縣", "臺北市", "新北市",
