@@ -79,7 +79,7 @@ def handle_text_message(event):
             actions=[
                 MessageAction(label='天氣查詢', text='切換到天氣查詢'),
                 MessageAction(label='一般對話', text='切換到一般對話'),
-                MessageAction(label='清除歷史', text='清除歷史')
+                MessageAction(label='這個沒用', text='我就說這個沒用了')
             ]
         )
         template_message = TemplateSendMessage(
@@ -92,14 +92,12 @@ def handle_text_message(event):
     # 處理模式切換
     if user_message == "切換到天氣查詢":
         user_states[user_id] = "weather"
-        ai_response = "已切換到天氣查詢模式。請輸入城市名稱：\n大台北地區：\n臺北市,新北市,基隆市\n\n桃竹苗地區：\n桃園市,新竹縣,新竹市,苗栗縣\n\n中彰投地區：\n臺中市,彰化縣,南投縣\n\n雲嘉南地區：\n雲林縣,嘉義縣,嘉義市,臺南市\n\n南部地區：\n高雄市,屏東縣\n\n東部地區：\n宜蘭縣,花蓮縣,臺東縣\n\n離島地區：\n澎湖縣,金門縣,連江縣"
+        ai_response = "已切換到天氣查詢模式。請輸入城市名稱：\n\n大台北地區：\n臺北市,新北市,基隆市\n\n桃竹苗地區：\n桃園市,新竹縣,新竹市,苗栗縣\n\n中彰投地區：\n臺中市,彰化縣,南投縣\n\n雲嘉南地區：\n雲林縣,嘉義縣,嘉義市,臺南市\n\n南部地區：\n高雄市,屏東縣\n\n東部地區：\n宜蘭縣,花蓮縣,臺東縣\n\n離島地區：\n澎湖縣,金門縣,連江縣"
     elif user_message == "切換到一般對話":
         user_states[user_id] = "chat"
         ai_response = "已切換到一般對話模式。您可以問我任何問題。"
-    elif user_message == "清除歷史":
-        if user_id in conversation_history:
-            conversation_history.pop(user_id)
-        ai_response = "已清除您的對話歷史記錄！"
+    elif user_message == "這個沒用":
+        ai_response = "我就說這個沒用了"
     # 根據用戶當前狀態處理訊息
     elif user_id in user_states and user_states[user_id] == "weather":
         # 在天氣查詢模式下，直接將用戶輸入視為地點名稱
@@ -129,7 +127,7 @@ def handle_text_message(event):
 # 提取地點函數
 def extract_location(text):
     # 將"台"轉換為"臺"
-    text = text.replace("台", "臺")
+    text = text.replace("台北市", "臺北市")
 
     location_mapping = {
         "宜蘭縣", "花蓮縣", "臺東縣", "澎湖縣", 
@@ -147,7 +145,6 @@ def extract_location(text):
         elif loc[:2] in text:
             return loc
     return None
-
 
 # 獲取天氣資訊函數
 def get_weather(location):
@@ -265,7 +262,7 @@ def create_rich_menu():
             ),
             RichMenuArea(
                 bounds=RichMenuBounds(x=1666, y=0, width=833, height=843),
-                action=MessageAction(label='清除歷史', text='清除歷史')
+                action=MessageAction(label='這個沒用', text='我就說這個沒用了')
             )
         ]
     )
