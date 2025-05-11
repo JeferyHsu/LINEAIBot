@@ -141,7 +141,7 @@ def get_weather(location):
     # 這裡使用氣象API獲取天氣資訊
     # 替換為您的氣象API金鑰
     api_key = "CWA-99B5891C-3560-4EAD-8A40-779E7C09684E"
-    url = f"https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization={api_key}&locationName={location}"
+    url = f"https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization={api_key}&locationName={location}"
     
     try:
         response = requests.get(url)
