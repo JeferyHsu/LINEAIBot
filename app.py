@@ -79,7 +79,7 @@ def handle_text_message(event):
             actions=[
                 MessageAction(label='天氣查詢', text='切換到天氣查詢'),
                 MessageAction(label='一般對話', text='切換到一般對話'),
-                MessageAction(label='這個沒用', text='我就說這個沒用了')
+                #MessageAction(label='這個沒用', text='我就說這個沒用了')
             ]
         )
         template_message = TemplateSendMessage(
@@ -92,10 +92,10 @@ def handle_text_message(event):
     # 處理模式切換
     if user_message == "切換到天氣查詢":
         user_states[user_id] = "weather"
-        ai_response = "已切換到天氣查詢模式。請輸入城市名稱：\n\n大台北地區：\n臺北市,新北市,基隆市\n\n桃竹苗地區：\n桃園市,新竹縣,新竹市,苗栗縣\n\n中彰投地區：\n臺中市,彰化縣,南投縣\n\n雲嘉南地區：\n雲林縣,嘉義縣,嘉義市,臺南市\n\n南部地區：\n高雄市,屏東縣\n\n東部地區：\n宜蘭縣,花蓮縣,臺東縣\n\n離島地區：\n澎湖縣,金門縣,連江縣"
+        ai_response = "已切換到天氣查詢模式。\n請輸入城市名稱：\n\n大台北地區：\n臺北市,新北市,基隆市\n\n桃竹苗地區：\n桃園市,新竹縣,新竹市,苗栗縣\n\n中彰投地區：\n臺中市,彰化縣,南投縣\n\n雲嘉南地區：\n雲林縣,嘉義縣,嘉義市,臺南市\n\n南部地區：\n高雄市,屏東縣\n\n東部地區：\n宜蘭縣,花蓮縣,臺東縣\n\n離島地區：\n澎湖縣,金門縣,連江縣"
     elif user_message == "切換到一般對話":
         user_states[user_id] = "chat"
-        ai_response = "已切換到一般對話模式。您可以問我任何問題。"
+        ai_response = "已切換到一般對話模式。\n您可以問我任何問題。"
     elif user_message == "這個沒用":
         ai_response = "我就說這個沒用了"
     # 根據用戶當前狀態處理訊息
@@ -129,7 +129,7 @@ def extract_location(text):
     # 將"台"轉換為"臺"
     replaced_text = text.replace("台北市", "臺北市")
     print(replaced_text)
-    
+
     location_mapping = {
         "宜蘭縣", "花蓮縣", "臺東縣", "澎湖縣", 
         "金門縣", "連江縣", "臺北市", "新北市",
@@ -261,10 +261,10 @@ def create_rich_menu():
                 bounds=RichMenuBounds(x=833, y=0, width=833, height=843),
                 action=MessageAction(label='一般對話', text='切換到一般對話')
             ),
-            RichMenuArea(
-                bounds=RichMenuBounds(x=1666, y=0, width=833, height=843),
-                action=MessageAction(label='這個沒用', text='我就說這個沒用了')
-            )
+            #RichMenuArea(
+                #bounds=RichMenuBounds(x=1666, y=0, width=833, height=843),
+                #action=MessageAction(label='這個沒用', text='我就說這個沒用了')
+            #)
         ]
     )
     return rich_menu
