@@ -20,10 +20,14 @@ handler = WebhookHandler('f14f0b2b60c46355df297e112dfa348f')
 
 # Gemini API設定
 client = genai.Client(api_key="AIzaSyCZVRwyR7PP9vQltot84y9uFvMhhpm0dus")
-#model = genai.GenerativeModel('gemini-2.0-flash')
 
 # 儲存對話歷史的字典
 conversation_history = {}
+
+@app.after_request
+def log_response(response):
+    print(f"回應狀態碼: {response.status_code}")
+    return response
 
 @app.route("/callback", methods=['POST'])
 def callback():
