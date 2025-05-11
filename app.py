@@ -4,6 +4,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import (
     MessageEvent, TextMessage, StickerMessage, ImageMessage, 
     VideoMessage, LocationMessage, TextSendMessage, StickerSendMessage
+    ,TextSendMessage,TemplateSendMessage, ButtonsTemplate, MessageAction
 )
 from google import genai
 import os
@@ -24,6 +25,9 @@ client = genai.Client(api_key="AIzaSyCZVRwyR7PP9vQltot84y9uFvMhhpm0dus")
 
 # 儲存對話歷史的字典
 conversation_history = {}
+
+# 添加用戶狀態追踪
+user_states = {}
 
 @app.after_request
 def log_response(response):
@@ -64,43 +68,45 @@ def handle_text_message(event):
         conversation_history[user_id] = []
     
     conversation_history[user_id].append({"role": "user", "content": user_message})
-
-    # 檢查是否是特殊命令
-    if user_message.lower() == "清除歷史":
+    
+    # 檢查是否是功能選單命令
+    if user_message.lower() == "功能選單":
+        # 發送按鈕模板
+        buttons_template = ButtonsTemplate(
+            title='功能選單',
+            text='請選擇您要使用的功能',
+            actions=[
+                MessageAction(label='天氣查詢', text='切換到天氣查詢'),
+                MessageAction(label='一般對話', text='切換到一般對話'),
+                MessageAction(label='清除歷史', text='清除歷史')
+            ]
+        )
+        template_message = TemplateSendMessage(
+            alt_text='功能選單',
+            template=buttons_template
+        )
+        line_bot_api.reply_message(event.reply_token, template_message)
+        return
+    
+    # 處理模式切換
+    if user_message == "切換到天氣查詢":
+        user_states[user_id] = "weather"
+        ai_response = "已切換到天氣查詢模式。請輸入城市名稱，例如：台北、高雄、台中等。"
+    elif user_message == "切換到一般對話":
+        user_states[user_id] = "chat"
+        ai_response = "已切換到一般對話模式。您可以問我任何問題。"
+    elif user_message == "清除歷史":
         if user_id in conversation_history:
             conversation_history.pop(user_id)
         ai_response = "已清除您的對話歷史記錄！"
-    # 檢查是否是天氣查詢
-    elif "天氣" in user_message:
-        # 嘗試提取地點
-        location = extract_location(user_message)
-        if location:
-            weather_info = get_weather(location)
-            ai_response = weather_info
-        else:
-            ai_response = "請提供您想查詢的地點，例如：「台北天氣」、「高雄天氣如何」等。"
-    # 檢查是否是幫助命令
-    elif user_message.lower() in ["幫助", "help", "指令"]:
-        ai_response = "【指令說明】\n" + \
-                     "1. 天氣查詢：輸入「XX天氣」，例如「台北天氣」\n" + \
-                     "2. 清除歷史：輸入「清除歷史」\n" + \
-                     "3. 一般對話：直接輸入您想問的問題\n" + \
-                     "4. 查看歷史：可透過API查詢，或輸入「歷史記錄」"
-    # 檢查是否是查詢歷史記錄
-    elif user_message.lower() in ["歷史記錄", "歷史", "history"]:
-        if user_id in conversation_history and len(conversation_history[user_id]) > 0:
-            history_text = "【您的對話歷史】\n"
-            for i, msg in enumerate(conversation_history[user_id]):
-                role = "您" if msg["role"] == "user" else "AI"
-                content = msg["content"]
-                if len(content) > 50:  # 截斷過長的訊息
-                    content = content[:47] + "..."
-                history_text += f"{i+1}. {role}: {content}\n"
-            ai_response = history_text
-        else:
-            ai_response = "您目前沒有對話歷史記錄。"
+    # 根據用戶當前狀態處理訊息
+    elif user_id in user_states and user_states[user_id] == "weather":
+        # 在天氣查詢模式下，直接將用戶輸入視為地點名稱
+        location = user_message
+        weather_info = get_weather(location)
+        ai_response = weather_info
     else:
-        # 使用Gemini API生成回應
+        # 預設為一般對話模式，使用Gemini API
         try:
             response = client.models.generate_content(
                 model="gemini-2.0-flash",
@@ -118,7 +124,6 @@ def handle_text_message(event):
         event.reply_token,
         TextSendMessage(text=ai_response)
     )
-
 
 # 提取地點函數
 def extract_location(text):
