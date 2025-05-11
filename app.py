@@ -128,13 +128,20 @@ def handle_text_message(event):
 
 # 提取地點函數
 def extract_location(text):
-    # 這裡可以實現更複雜的地點提取邏輯
-    # 簡單示例：假設地點在"天氣"前面
-    locations = ["台北", "台中", "高雄", "新北", "桃園", "台南"]
-    for loc in locations:
+    location_mapping = {
+        "台北": "臺北市",
+        "台中": "臺中市",
+        "高雄": "高雄市",
+        "台南": "臺南市",
+        "桃園": "桃園市"
+        # 其他地名映射
+    }
+    
+    for loc in location_mapping.keys():
         if loc in text:
-            return loc
+            return location_mapping[loc]
     return None
+
 
 # 獲取天氣資訊函數
 def get_weather(location):
