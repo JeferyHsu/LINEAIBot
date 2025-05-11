@@ -6,6 +6,7 @@ from linebot.models import (
     VideoMessage, LocationMessage, TextSendMessage, StickerSendMessage
     ,TextSendMessage,TemplateSendMessage, ButtonsTemplate, MessageAction
 )
+from linebot.models import RichMenu, RichMenuArea, RichMenuBounds, RichMenuSize
 from google import genai
 import os
 import json
@@ -230,6 +231,30 @@ def handle_location_message(event):
         TextSendMessage(text=response_text)
     )
 
+# 創建Rich Menu
+def create_rich_menu():
+    rich_menu = RichMenu(
+        size=RichMenuSize(width=2500, height=843),
+        selected=True,
+        name="功能選單",
+        chat_bar_text="點擊開啟選單",
+        areas=[
+            RichMenuArea(
+                bounds=RichMenuBounds(x=0, y=0, width=833, height=843),
+                action=MessageAction(label='天氣查詢', text='切換到天氣查詢')
+            ),
+            RichMenuArea(
+                bounds=RichMenuBounds(x=833, y=0, width=833, height=843),
+                action=MessageAction(label='一般對話', text='切換到一般對話')
+            ),
+            RichMenuArea(
+                bounds=RichMenuBounds(x=1666, y=0, width=833, height=843),
+                action=MessageAction(label='清除歷史', text='清除歷史')
+            )
+        ]
+    )
+    return rich_menu
+
 # RESTful API for conversation history
 @app.route("/history/<user_id>", methods=['GET'])
 def get_history(user_id):
@@ -244,4 +269,14 @@ def delete_history(user_id):
     return "History deleted"
 
 if __name__ == "__main__":
+    # 創建並上傳Rich Menu
+    rich_menu_id = line_bot_api.create_rich_menu(create_rich_menu())
+    
+    # 上傳Rich Menu圖片（需要準備一張2500x843像素的圖片）
+    with open("hazy01.jpg", 'rb') as f:
+        line_bot_api.set_rich_menu_image(rich_menu_id, "image/jpeg", f)
+    
+    # 將Rich Menu設為預設
+    line_bot_api.set_default_rich_menu(rich_menu_id)
+    
     app.run(debug=True, port=8000)
