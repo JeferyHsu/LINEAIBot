@@ -258,9 +258,9 @@ def create_rich_menu():
                 action=MessageAction(label='天氣查詢', text='切換到天氣查詢')
             ),
             RichMenuArea(
-                bounds=RichMenuBounds(x=833, y=0, width=833, height=843),
+                bounds=RichMenuBounds(x=1250, y=0, width=833, height=843),
                 action=MessageAction(label='一般對話', text='切換到一般對話')
-            ),
+            )
             #RichMenuArea(
                 #bounds=RichMenuBounds(x=1666, y=0, width=833, height=843),
                 #action=MessageAction(label='這個沒用', text='我就說這個沒用了')
